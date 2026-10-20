@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fffaf6" />
+  <title>Birthday Activities – Wunsch-Abstimmung</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Great+Vibes&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --paper:#fffaf7; --blue:#0756b9; --pink:#ed0052; --purple:#9548ff; --ink:#183d6e; --muted:#61738b; --edge:#dce4f1; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#f0f2f6; color:var(--ink); font-family:'DM Sans',sans-serif; }
+    .page { position:relative; isolation:isolate; overflow:hidden; max-width:1340px; min-height:100vh; margin:24px auto; padding:44px clamp(16px,3vw,44px) 64px; background:var(--paper); box-shadow:0 12px 36px #20364b12; }
+    .confetti { position:absolute; width:165px; height:260px; top:5px; z-index:-1; pointer-events:none; opacity:.95; }
+    .confetti.left{left:-11px}.confetti.right{right:-15px;transform:scaleX(-1)}
+    h1 { font-family:'Great Vibes',cursive; font-weight:400; font-size:clamp(68px,9vw,120px); line-height:1.15; letter-spacing:1px; color:var(--blue); text-align:center; margin:6px 0 8px; }
+    .subtitle { text-align:center; max-width:650px; margin:0 auto 32px; color:var(--muted); font-size:15px; line-height:1.6; }
+    .notice { border:1px solid #b7cae8; border-radius:16px; background:#f3f7ff; padding:14px 18px; line-height:1.5; margin:0 auto 24px; max-width:690px; }
+    .notice.error {background:#fff0f3;border-color:#ffc0d0;color:#a01742}
+    .notice.success {background:#ecfff5;border-color:#9dd7b8;color:#17633d}
+    .form-wrap { max-width:690px; margin:0 auto 28px; display:flex; align-items:end; gap:12px; flex-wrap:wrap; }
+    label { display:block; font-size:13px; font-weight:700; margin-bottom:7px; color:var(--blue); }
+    input { width:100%; background:white; border:2px solid #b9cdec; border-radius:12px; padding:12px 14px; font:inherit; outline:none; min-height:46px; }
+    input:focus {border-color:var(--purple);box-shadow:0 0 0 3px #9548ff17}
+    input:disabled {background:#f1f3f7;color:#62718a}
+    .name-field{flex:1 1 240px}
+    .counter { flex:0 0 auto; color:var(--blue); font-weight:700; padding:12px 0; }
+    .grid {display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:32px 27px; margin:28px 0 26px;}
+    .activity {min-height:226px; position:relative; background:transparent; color:var(--pink); border:3px solid var(--blue); border-radius:39px; display:flex; align-items:center; justify-content:center; padding:32px 20px; cursor:pointer; text-align:center; transition:transform .15s,box-shadow .15s,background .15s; font:600 clamp(20px,2.1vw,27px)/1.48 'Playfair Display',Georgia,serif;}
+    .activity:hover{transform:translateY(-3px);box-shadow:0 8px 20px #0056bd13}
+    .activity:focus-visible{outline:4px solid #9a4aff;outline-offset:5px}
+    .activity.selected{outline:4px solid var(--purple);outline-offset:2px;background:#f8f2ff}
+    .activity .check {position:absolute;top:13px;right:15px;border:2px solid var(--blue);background:white;width:29px;height:29px;border-radius:50%;display:grid;place-items:center;color:white;font:800 17px 'DM Sans',sans-serif;}
+    .activity.selected .check{background:var(--purple);border-color:var(--purple)}
+    .activity .rank-label{position:absolute;left:17px;top:13px;background:var(--blue);color:white;border-radius:100px;padding:6px 12px;font:700 12px 'DM Sans',sans-serif;display:none}
+    .activity.selected .rank-label{display:block}
+    .activity.selected.rank-two{outline-color:#ec6b9c;background:#fff1f5}
+    .activity.selected.rank-two .check,.activity.selected.rank-two .rank-label{background:#dc3c7a;border-color:#dc3c7a}
+    .wish-preview{margin:0 auto 14px;max-width:690px;padding:14px 18px;border:1px solid var(--edge);border-radius:16px;background:white;display:grid;gap:8px;color:var(--ink);font-size:14px}
+    .wish-preview strong{color:var(--blue)}
+    .results .result-detail{color:var(--muted);font-size:12px;margin-top:7px;display:flex;gap:12px;flex-wrap:wrap}
+    .activity .doodle{position:absolute;right:16px;bottom:8px;font-size:58px;transform:rotate(-14deg);opacity:.75;filter:saturate(.75)}
+    .actions {display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;margin-top:27px}
+    button.primary {background:var(--blue);color:white;border:2px solid var(--blue);border-radius:14px;padding:13px 26px;min-height:49px;font:700 15px 'DM Sans',sans-serif;cursor:pointer}
+    button.primary:hover:not(:disabled){background:#003f91}
+    button:disabled{opacity:.55;cursor:not-allowed}
+    button.secondary {background:transparent;color:var(--blue);border:2px solid var(--blue);border-radius:14px;padding:11px 19px;font:700 14px 'DM Sans',sans-serif;cursor:pointer}
+    .foot {text-align:center;margin-top:42px;font-size:13px;color:#6b7f99}
+    .foot button {border:0;background:none;text-decoration:underline;color:var(--blue);cursor:pointer;font:inherit}
+    .admin-panel {max-width:940px;margin:15px auto 0;}
+    .admin-panel h2 {color:var(--blue);font:600 30px 'Playfair Display',serif;text-align:center}
+    .login {max-width:460px;margin:0 auto;display:grid;gap:16px}
+    .login .primary{width:100%}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
+    .stat{border:2px solid var(--blue);border-radius:18px;padding:18px;text-align:center}
+    .stat strong{display:block;color:var(--pink);font-size:30px}
+    .results{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0}
+    .result{border:1px solid var(--edge);border-radius:14px;padding:12px 15px;background:white}
+    .result-top{display:flex;justify-content:space-between;gap:10px;font-size:14px;font-weight:700}
+    .bar{height:8px;background:#ebf1fa;border-radius:20px;margin-top:10px;overflow:hidden}
+    .bar-fill{height:100%;background:var(--pink);border-radius:20px}
+    .table-wrap{overflow-x:auto;background:white;border:1px solid var(--edge);border-radius:14px}
+    table{border-collapse:collapse;width:100%;font-size:14px;text-align:left}
+    th,td{padding:12px 16px;border-bottom:1px solid var(--edge)}
+    th{color:var(--blue);background:#eff5ff}tr:last-child td{border:0}
+    [hidden]{display:none!important}
+    @media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.activity{min-height:195px}.confetti{opacity:.45}}
+    @media(max-width:560px){.page{margin:0;padding:26px 15px 42px}.grid{grid-template-columns:1fr;gap:17px}.activity{min-height:142px;font-size:22px;border-radius:28px}.doodle{font-size:43px!important}.confetti{width:90px;opacity:.25}.subtitle{margin-bottom:24px}.results{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:12px 6px}.stat strong{font-size:25px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <svg class="confetti left" viewBox="0 0 170 260" aria-hidden="true"><g fill="none" stroke-width="1.7"><path d="M24 10 C-9 55 57 39 22 97 S14 176 29 225" stroke="#ff5987"/><path d="M80 9 C28 55 94 37 65 108 S60 174 20 254" stroke="#4f85db"/><path d="M114 42 C74 76 124 104 88 143" stroke="#ff5987"/><path d="M6 75 C55 47 56 113 98 84" stroke="#4f85db"/></g><g stroke="#6f9fdb" stroke-width="1.7"><path d="M67 32 l8 13 17 1-13 11 4 17-16-8-14 9 3-17-13-11 17-2Z" fill="#f8d58c"/><path d="M116 81 l8 13 15 2-12 11 4 14-15-7-13 7 3-14-11-11 15-2Z" fill="#f8d58c"/><path d="M36 102 l7 10 13 2-11 10 3 14-12-7-13 7 3-14-10-10 13-2Z" fill="#f8d58c"/></g></svg>
+  <svg class="confetti right" viewBox="0 0 170 260" aria-hidden="true"><g fill="none" stroke-width="1.7"><path d="M24 10 C-9 55 57 39 22 97 S14 176 29 225" stroke="#ff5987"/><path d="M80 9 C28 55 94 37 65 108 S60 174 20 254" stroke="#4f85db"/><path d="M114 42 C74 76 124 104 88 143" stroke="#ff5987"/><path d="M6 75 C55 47 56 113 98 84" stroke="#4f85db"/></g><g stroke="#6f9fdb" stroke-width="1.7"><path d="M67 32 l8 13 17 1-13 11 4 17-16-8-14 9 3-17-13-11 17-2Z" fill="#f8d58c"/><path d="M116 81 l8 13 15 2-12 11 4 14-15-7-13 7 3-14-11-11 15-2Z" fill="#f8d58c"/></g></svg>
+  <header><h1>Birthday Activities</h1><p class="subtitle">Welche Aktivitäten wünschst du dir für den Geburtstag? Klicke zuerst auf deinen <strong>1. Wunsch</strong> und dann auf deinen <strong>2. Wunsch</strong>. Ein erneuter Klick entfernt die Auswahl. Deine Auswahl ist geheim – nur der Admin kann die gesammelten Stimmen sehen.</p></header>
+  <main>
+    <div id="message" class="notice" role="status" aria-live="polite" hidden></div>
+    <section id="vote-section">
+      <div class="form-wrap"><div class="name-field"><label for="person-name">Dein Vorname / Spitzname</label><input id="person-name" type="text" maxlength="40" autocomplete="nickname" placeholder="z. B. Alex" /></div><div class="counter" id="counter">0 von 2 Wünschen</div></div>
+      <div class="grid" id="activities">
+        <button class="activity" type="button" data-option="Padel spielen" aria-pressed="false"><span>Padel spielen</span><span class="doodle" aria-hidden="true">🎉</span><span class="check" aria-hidden="true"></span></button>
+        <button class="activity" type="button" data-option="GameShow ClashTeam" aria-pressed="false"><span>GameShow<br>ClashTeam</span><span class="check" aria-hidden="true"></span></button>
+        <button class="activity" type="button" data-option="Acarde Arena Wandsbeck" aria-pressed="false"><span>Acarde Arena<br>Wandsbeck</span><span class="doodle" aria-hidden="true">🥳</span><span class="check" aria-hidden="true"></span></button>
+        <button class="activity" type="button" data-option="Ballet im Theater - Dornröschen" aria-pressed="false"><span>Ballet im „Theater“<br>– Dornröschen</span><span class="check" aria-hidden="true"></span></button>
+        <button class="activity" type="button" data-option="Winterdom Hamburg" aria-pressed="false"><span>Winterdom<br>Hamburg</span><span class="doodle" aria-hidden="true">🍰</span><span class="check" aria-hidden="true"></span></button>
+        <button class="activity" type="button" data-option="Therme/Erlebnisbad" aria-pressed="false"><span>Therme/Erlebnis<br>bad</span><span class="check" aria-hidden="true"></span></button>
+      </div>
+      <div class="wish-preview" aria-live="polite"><div><strong>🥇 1. Wunsch:</strong> <span id="first-choice">Noch nicht ausgewählt</span></div><div><strong>🥈 2. Wunsch:</strong> <span id="second-choice">Noch nicht ausgewählt</span></div></div>
+      <div class="actions"><button class="primary" type="button" id="save-vote" disabled>Wünsche speichern</button></div>
+      <p class="foot">Du kannst deine Wünsche später in <strong>diesem Browser</strong> ändern. <button type="button" id="show-admin">Admin-Login</button></p>
+    </section>
+    <section id="admin-section" class="admin-panel" hidden>
+      <h2>🔒 Admin-Bereich</h2>
+      <div class="login" id="admin-login"><div><label for="admin-email">E-Mail-Adresse</label><input id="admin-email" type="email" autocomplete="username" placeholder="admin@example.com" /></div><div><label for="admin-password">Passwort</label><input id="admin-password" type="password" autocomplete="current-password" /></div><button type="button" class="primary" id="login-button">Anmelden</button></div>
+      <div id="admin-dashboard" hidden><div class="stats"><div class="stat"><strong id="voter-count">0</strong>Personen</div><div class="stat"><strong id="vote-count">0</strong>Wünsche</div><div class="stat"><strong id="top-count">–</strong>Top-Stimmen</div></div><h3>Ergebnisse nach Erst- und Zweitwunsch</h3><div class="results" id="results"></div><h3>Einzelne Abstimmungen</h3><div class="table-wrap"><table><thead><tr><th>Name</th><th>Wunsch 1</th><th>Wunsch 2</th></tr></thead><tbody id="voter-rows"></tbody></table></div><div class="actions"><button class="secondary" type="button" id="refresh-button">Aktualisieren</button><button class="secondary" type="button" id="logout-button">Ausloggen</button></div></div>
+      <p class="foot"><button type="button" id="back-button">← Zur Abstimmung</button></p>
+    </section>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  // HIER DEINE SUPABASE-PROJEKTDATEN EINFÜGEN (siehe README.md):
+  const SUPABASE_URL = 'DEINE_SUPABASE_URL';
+  const SUPABASE_ANON_KEY = 'DEIN_SUPABASE_PUBLISHABLE_KEY';
+
+  const OPTIONS = [
+    'Padel spielen',
+    'GameShow ClashTeam',
+    'Acarde Arena Wandsbeck',
+    'Ballet im Theater - Dornröschen',
+    'Winterdom Hamburg',
+    'Therme/Erlebnisbad'
+  ];
+  const configured = SUPABASE_URL.startsWith('https://') && !SUPABASE_ANON_KEY.startsWith('DEIN_');
+  const db = configured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true } }) : null;
+  const $ = id => document.getElementById(id);
+  const selected = new Set();
+  let savedName = '';
+  let adminMode = false;
+  function alertBox(text, kind = '') { const el = $('message'); el.textContent = text; el.className = 'notice' + (kind ? ' ' + kind : ''); el.hidden = !text; }
+  function updateUI() {
+    document.querySelectorAll('.activity').forEach(button => {
+      const position = [...selected].indexOf(button.dataset.option);
+      const active = position !== -1;
+      button.classList.toggle('selected', active);
+      button.classList.toggle('rank-two', position === 1);
+      let rank = button.querySelector('.rank-label');
+      if (!rank) { rank = document.createElement('span'); rank.className = 'rank-label'; button.append(rank); }
+      rank.textContent = position === 0 ? '1. Wunsch' : position === 1 ? '2. Wunsch' : '';
+      button.setAttribute('aria-pressed', String(active));
+      button.querySelector('.check').textContent = active ? '✓' : '';
+    });
+    $('counter').textContent = `${selected.size} von 2 Wünschen`;
+    $('first-choice').textContent = [...selected][0] || 'Noch nicht ausgewählt';
+    $('second-choice').textContent = [...selected][1] || 'Noch nicht ausgewählt';
+    $('save-vote').disabled = !configured || selected.size === 0;
+  }
+  document.querySelectorAll('.activity').forEach(button => button.addEventListener('click', () => {
+    const item = button.dataset.option;
+    if (selected.has(item)) selected.delete(item);
+    else if (selected.size < 2) selected.add(item);
+    else { alertBox('Du kannst höchstens zwei Wünsche auswählen. Entferne zuerst einen Wunsch.'); return; }
+    alertBox(''); updateUI();
+  }));
+  async function ensureGuest() {
+    const { data: { session }, error } = await db.auth.getSession();
+    if (error) throw error;
+    if (session) return session;
+    const { data, error: guestError } = await db.auth.signInAnonymously();
+    if (guestError) throw guestError;
+    return data.session;
+  }
+  async function loadMyVote() {
+    const {data, error} = await db.rpc('get_my_ballot');
+    if (error) throw error;
+    if (data && data.length) {
+      const ballot = data[0];
+      savedName = ballot.display_name;
+      $('person-name').value = savedName;
+      $('person-name').disabled = true;
+      (ballot.choices || []).forEach(item => selected.add(item));
+    }
+    updateUI();
+  }
+  $('save-vote').addEventListener('click', async () => {
+    const name = $('person-name').value.trim();
+    if (name.length < 2 || name.length > 40) { alertBox('Bitte gib einen Namen mit 2 bis 40 Zeichen ein.', 'error'); return; }
+    if (!selected.size) { alertBox('Bitte wähle mindestens eine Aktivität.', 'error'); return; }
+    $('save-vote').disabled = true;
+    alertBox('Deine Wünsche werden gespeichert …');
+    try {
+      await ensureGuest();
+      const {error} = await db.rpc('save_my_ballot', {p_name:name, p_choices:[...selected]});
+      if (error) throw error;
+      savedName = name; $('person-name').disabled = true;
+      alertBox('✅ Gespeichert! Deine Wünsche sind angekommen. Du kannst deine Auswahl hier jederzeit ändern.', 'success');
+    } catch (err) {
+      console.error(err);
+      alertBox(err.code === '23505' ? 'Dieser Name ist schon vergeben. Bitte verwende einen anderen Namen.' : 'Speichern fehlgeschlagen: ' + (err.message || 'Unbekannter Fehler'), 'error');
+    } finally { updateUI(); }
+  });
+  async function enterAdmin() {
+    adminMode = true; $('vote-section').hidden = true; $('admin-section').hidden = false;
+    alertBox('');
+    if (!db) { alertBox('Zuerst Supabase konfigurieren (siehe README).', 'error'); return; }
+    try {
+      const {data:{session}} = await db.auth.getSession();
+      if (session && !session.user.is_anonymous) await showDashboard();
+    } catch(e) { console.warn(e); }
+  }
+  $('show-admin').addEventListener('click', enterAdmin);
+  $('back-button').addEventListener('click', () => { adminMode = false; $('admin-section').hidden = true; $('vote-section').hidden = false; alertBox(''); });
+  $('login-button').addEventListener('click', async () => {
+    if (!db) return;
+    $('login-button').disabled = true;
+    try {
+      const { error } = await db.auth.signInWithPassword({email:$('admin-email').value.trim(), password:$('admin-password').value});
+      if (error) throw error;
+      await showDashboard();
+    } catch(err) { alertBox('Anmeldung nicht möglich: ' + err.message, 'error'); }
+    finally { $('login-button').disabled = false; }
+  });
+  async function showDashboard() {
+    const {data, error} = await db.rpc('get_admin_ballots');
+    if (error) throw error;
+    $('admin-login').hidden = true; $('admin-dashboard').hidden = false;
+    const counts = Object.fromEntries(OPTIONS.map(option => [option, {first:0, second:0}]));
+    (data || []).forEach(row => (row.choices || []).forEach((choice, index) => { if (choice in counts) counts[choice][index === 0 ? 'first' : 'second']++; }));
+    const totals = Object.values(counts).map(c => c.first + c.second);
+    $('voter-count').textContent = (data || []).length;
+    $('vote-count').textContent = totals.reduce((sum,x) => sum+x, 0);
+    $('top-count').textContent = Math.max(0,...totals);
+    const results = $('results'); results.replaceChildren();
+    OPTIONS.forEach(option => {
+      const {first, second} = counts[option];
+      const count = first + second;
+      const card = document.createElement('div'); card.className = 'result';
+      const top = document.createElement('div'); top.className = 'result-top';
+      const title = document.createElement('span'); title.textContent = option;
+      const value = document.createElement('span'); value.textContent = String(count);
+      const bar = document.createElement('div'); bar.className = 'bar';
+      const fill = document.createElement('div'); fill.className = 'bar-fill';
+      fill.style.width = `${(data || []).length ? (count / data.length * 100) : 0}%`;
+      const detail = document.createElement('div'); detail.className = 'result-detail';
+      detail.textContent = `🥇 1. Wunsch: ${first}  ·  🥈 2. Wunsch: ${second}`;
+      top.append(title,value); bar.append(fill); card.append(top,bar,detail); results.append(card);
+    });
+    const tbody = $('voter-rows'); tbody.replaceChildren();
+    (data || []).forEach(row => {
+      const tr = document.createElement('tr');
+      [row.display_name, row.choices?.[0] || '–', row.choices?.[1] || '–'].forEach(value => { const td = document.createElement('td'); td.textContent = value; tr.append(td); });
+      tbody.append(tr);
+    });
+    alertBox('');
+  }
+  $('refresh-button').addEventListener('click', async () => { try {await showDashboard();}catch(e){alertBox(e.message,'error');} });
+  $('logout-button').addEventListener('click', async () => {
+    await db.auth.signOut();
+    $('admin-dashboard').hidden = true; $('admin-login').hidden = false;
+    $('admin-password').value = '';
+    selected.clear(); savedName = ''; $('person-name').value = ''; $('person-name').disabled = false;
+    updateUI(); alertBox('Du wurdest abgemeldet.', 'success');
+    // Beim nächsten Seitenbesuch wird wieder ein anonymes Konto erstellt.
+  });
+  (async () => {
+    updateUI();
+    if (!configured) { alertBox('⚙️ Demo-Modus: Bitte SUPABASE_URL und SUPABASE_ANON_KEY im HTML eintragen, damit Stimmen gespeichert werden.', 'error'); return; }
+    try {
+      const session = await ensureGuest();
+      if (session.user?.is_anonymous) await loadMyVote();
+      else { alertBox('Du bist als Admin angemeldet. Öffne unten den Admin-Bereich.', 'success'); }
+    } catch(err) { alertBox('Verbindung zur Datenbank fehlgeschlagen: ' + err.message, 'error'); }
+  })();
+</script>
+</body>
+</html>
